@@ -317,6 +317,7 @@ gauge_pct = max(0.0, min(1.0, proba)) * 100
 
 with result_col:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-label">OUTPUT · updates live</div>', unsafe_allow_html=True)
     st.markdown('<div class="panel-title">Risk assessment</div>', unsafe_allow_html=True)
 
     if pred == 1:
