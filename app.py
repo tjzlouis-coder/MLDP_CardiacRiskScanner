@@ -24,16 +24,16 @@ st.markdown("""
 :root {
     --ink: #0B1F3A;
     --ink-soft: #475467;
-    --paper: #F5F7FA;
+    --paper: #EEF2F8;
     --line: #E4E7EC;
-    --teal: #0F766E;
-    --teal-soft: #CCFBF1;
-    --risk-high-bg: #FEF3F2;
-    --risk-high-line: #FDA29B;
-    --risk-high-text: #B42318;
-    --risk-low-bg: #ECFDF3;
-    --risk-low-line: #A6F4C5;
-    --risk-low-text: #027A48;
+    --accent: #2563EB;
+    --accent-soft: #DBEAFE;
+    --risk-high-bg: #FEE2E2;
+    --risk-high-line: #F87171;
+    --risk-high-text: #B91C1C;
+    --risk-low-bg: #DCFCE7;
+    --risk-low-line: #4ADE80;
+    --risk-low-text: #15803D;
 }
 
 html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
@@ -41,7 +41,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 
 /* ---- Instrument header bar ---- */
 .instrument-header {
-    background: linear-gradient(135deg, var(--ink) 0%, #14304F 100%);
+    background: linear-gradient(135deg, #0B1F3A 0%, #1D4ED8 100%);
     border-radius: 14px;
     padding: 1.75rem 2rem;
     margin-bottom: 1.5rem;
@@ -49,6 +49,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25);
 }
 .instrument-header h1 {
     font-size: 1.6rem;
@@ -57,7 +58,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
     letter-spacing: -0.01em;
 }
 .instrument-header p {
-    color: #C5D3E3;
+    color: #DBEAFE;
     margin: 0.35rem 0 0 0;
     font-size: 0.92rem;
     max-width: 560px;
@@ -87,9 +88,9 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 .panel-card {
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 1.5rem 1.6rem;
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.06);
     margin-bottom: 1rem;
 }
 .panel-label {
@@ -97,13 +98,13 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--teal);
-    font-weight: 600;
+    color: var(--accent);
+    font-weight: 700;
     margin-bottom: 0.25rem;
 }
 .panel-title {
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--ink);
     margin-bottom: 0.9rem;
 }
@@ -121,8 +122,8 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 .risk-low h3  { color: var(--risk-low-text);  margin: 0 0 0.4rem 0; font-size: 1.15rem; }
 .risk-figure {
     font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 2.1rem;
+    font-weight: 700;
+    font-size: 2.2rem;
     color: var(--ink);
     line-height: 1;
     margin: 0.2rem 0 0.6rem 0;
@@ -132,7 +133,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 /* ---- Gauge bar ---- */
 .gauge-track {
     position: relative;
-    height: 8px;
+    height: 10px;
     border-radius: 999px;
     background: var(--line);
     margin: 0.9rem 0 0.4rem 0;
@@ -141,13 +142,14 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 .gauge-fill {
     height: 100%;
     border-radius: 999px;
-    background: linear-gradient(90deg, #027A48, #F79009 60%, #B42318);
+    background: linear-gradient(90deg, #16A34A, #FACC15 55%, #DC2626);
 }
 .gauge-marker {
     position: absolute;
-    top: -4px;
-    width: 2px; height: 16px;
+    top: -5px;
+    width: 3px; height: 20px;
     background: var(--ink);
+    border-radius: 2px;
 }
 .gauge-labels {
     display: flex;
@@ -167,6 +169,9 @@ div[data-testid="stExpander"] {
 }
 .stSlider label, .stRadio label, .stSelectbox label { color: var(--ink); font-weight: 500; }
 hr { border-color: var(--line) !important; }
+[data-baseweb="slider"] div[role="slider"] { background-color: var(--accent) !important; }
+[data-testid="stSlider"] [data-baseweb="slider"] > div > div { background: var(--accent) !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -205,7 +210,6 @@ input_col, result_col = st.columns([1.1, 1], gap="large")
 
 with input_col:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-label">INPUT</div>', unsafe_allow_html=True)
     st.markdown('<div class="panel-title">Patient checkup data</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
@@ -300,6 +304,7 @@ gauge_pct = max(0.0, min(1.0, proba)) * 100
 
 with result_col:
     st.markdown('<div class="panel-card">', unsafe_allow_html=True)
+    st.markdown('<div class="panel-label">OUTPUT · updates live</div>', unsafe_allow_html=True)
     st.markdown('<div class="panel-title">Risk assessment</div>', unsafe_allow_html=True)
 
     if pred == 1:
