@@ -41,7 +41,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 
 /* ---- Instrument header bar ---- */
 .instrument-header {
-    background: linear-gradient(135deg, #0B1F3A 0%, #1D4ED8 100%);
+    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 55%, #60A5FA 100%);
     border-radius: 14px;
     padding: 1.75rem 2rem;
     margin-bottom: 1.5rem;
@@ -49,7 +49,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25);
+    box-shadow: 0 8px 24px rgba(29, 78, 216, 0.3);
 }
 .instrument-header h1 {
     font-size: 1.6rem;
@@ -171,6 +171,19 @@ div[data-testid="stExpander"] {
 hr { border-color: var(--line) !important; }
 [data-baseweb="slider"] div[role="slider"] { background-color: var(--accent) !important; }
 [data-testid="stSlider"] [data-baseweb="slider"] > div > div { background: var(--accent) !important; }
+
+/* ---- Dropdowns (selectboxes) — make them clearly stand out as clickable ---- */
+[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+    border: 2px solid var(--accent) !important;
+    border-radius: 10px !important;
+    background: var(--accent-soft) !important;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15);
+    transition: box-shadow 0.15s ease;
+}
+[data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover {
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+[data-testid="stSelectbox"] svg { fill: var(--accent) !important; }
 
 </style>
 """, unsafe_allow_html=True)
