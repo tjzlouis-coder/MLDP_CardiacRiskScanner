@@ -8,9 +8,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# ----------------------------------------------------------------------------
 # Page config & light styling
-# ----------------------------------------------------------------------------
 st.set_page_config(
     page_title="SmartCare Cardiac Risk Screener",
     page_icon="🫀",
@@ -200,9 +198,8 @@ div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
 """, unsafe_allow_html=True)
 
 
-# ----------------------------------------------------------------------------
+
 # Load model (cached so it only loads once)
-# ----------------------------------------------------------------------------
 @st.cache_resource
 def load_model():
     model = joblib.load("heart_disease_model.joblib")
@@ -211,9 +208,8 @@ def load_model():
 
 model = load_model()
 
-# ----------------------------------------------------------------------------
+
 # Header
-# ----------------------------------------------------------------------------
 st.markdown("""
 <div class="instrument-header">
     <div>
@@ -225,11 +221,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------------------------------------------------------------------
+
 # Two-column page layout: input widgets on the left, results panel on the right
-# NOTE: no st.form here on purpose — plain widgets rerun the script (and update
-# the prediction) the instant any value changes, giving live updates.
-# ----------------------------------------------------------------------------
+# plain widgets rerun the script (and update the prediction) the instant any value changes, giving live updates.
 input_col, result_col = st.columns([1.1, 1], gap="large")
 
 with input_col:
@@ -271,11 +265,8 @@ with input_col:
                 format_func=lambda x: {3: "Normal", 6: "Fixed defect", 7: "Reversible defect"}[x],
             )
 
-        # --------------------------------------------------------------------
-        # Glossary — brief explanation of what each field means, for a
-        # non-clinical audience (e.g. the lecturer/investor persona) viewing
-        # the demo
-        # --------------------------------------------------------------------
+        
+        # Glossary — brief explanation of what each field means
         with st.expander("ℹ️ What do these fields mean?"):
             st.markdown(
                 """
@@ -297,10 +288,8 @@ with input_col:
                 """
             )
 
-# ----------------------------------------------------------------------------
-# Prediction — recomputed on every rerun (i.e. every time any widget changes),
-# so the result panel updates live without needing a submit button
-# ----------------------------------------------------------------------------
+
+# Prediction — recomputed on every rerun (i.e. every time any widget changes), so the result panel updates live without needing a submit button
 raw = pd.DataFrame([{
     "age": age, "sex": sex, "cp": cp, "trestbps": trestbps, "chol": chol,
     "fbs": fbs, "restecg": restecg, "thalach": thalach, "exang": exang,
@@ -312,17 +301,11 @@ raw["age_group"] = pd.cut(raw["age"], bins=[0, 45, 55, 65, 100],
                            labels=["<=45", "46-55", "56-65", "65+"])
 raw["oldpeak_slope"] = raw["oldpeak"] * raw["slope"]
 
-# NOTE: no column reordering needed here — the trained pipeline's
-# ColumnTransformer selects columns by NAME (see notebook cell defining
-# numeric_cols / categorical_cols), so column order in this DataFrame
-# doesn't matter as long as all the right column names are present.
-
 pred = model.predict(raw)[0]
 proba = model.predict_proba(raw)[0][1]
 
-# ----------------------------------------------------------------------------
+
 # Right column — live results panel
-# ----------------------------------------------------------------------------
 gauge_pct = max(0.0, min(1.0, proba)) * 100
 
 with result_col:
