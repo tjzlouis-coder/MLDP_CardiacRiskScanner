@@ -41,7 +41,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 
 /* ---- Instrument header bar ---- */
 .instrument-header {
-    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 55%, #60A5FA 100%);
+    background: linear-gradient(90deg, #1E3A8A 0%, #2563EB 50%, #38BDF8 100%);
     border-radius: 14px;
     padding: 1.75rem 2rem;
     margin-bottom: 1.5rem;
@@ -84,16 +84,7 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
-/* ---- Panel cards ---- */
-.panel-card {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 1.5rem 1.6rem;
-    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.06);
-    margin-bottom: 1rem;
-}
-.panel-label {
+/* ---- Panel section labels/titles (used inside real st.container(border=True)) ---- */
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.7rem;
     letter-spacing: 0.1em;
@@ -160,6 +151,16 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
     margin-top: 0.2rem;
 }
 
+/* ---- Streamlit's real bordered containers (replaces the old div hack) ---- */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #fff;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.06);
+}
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    border-radius: 16px !important;
+}
+
 /* ---- Streamlit widget refinements ---- */
 [data-testid="stMetricValue"] { font-family: 'IBM Plex Mono', monospace; color: var(--ink); }
 div[data-testid="stExpander"] {
@@ -169,8 +170,18 @@ div[data-testid="stExpander"] {
 }
 .stSlider label, .stRadio label, .stSelectbox label { color: var(--ink); font-weight: 500; }
 hr { border-color: var(--line) !important; }
-[data-baseweb="slider"] div[role="slider"] { background-color: var(--accent) !important; }
-[data-testid="stSlider"] [data-baseweb="slider"] > div > div { background: var(--accent) !important; }
+
+/* ---- Slider color override (CSS-only, no theme config file) ---- */
+div[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"] {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
+    background: var(--accent) !important;
+}
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
+    background: var(--line) !important;
+}
 
 /* ---- Dropdowns (selectboxes) — make them clearly stand out as clickable ---- */
 [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
@@ -222,70 +233,69 @@ st.markdown("""
 input_col, result_col = st.columns([1.1, 1], gap="large")
 
 with input_col:
-    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-title">Patient checkup data</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">Patient checkup data</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-    with col1:
-        age = st.slider("Age", 18, 90, 54)
-        sex = st.radio("Sex", options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female", horizontal=True)
-        cp = st.selectbox(
-            "Chest pain type", options=[1, 2, 3, 4],
-            format_func=lambda x: {1: "Typical angina", 2: "Atypical angina",
-                                    3: "Non-anginal pain", 4: "Asymptomatic"}[x],
-        )
-        trestbps = st.slider("Resting blood pressure (mm Hg)", 80, 220, 130)
-        chol = st.slider("Serum cholesterol (mg/dl)", 100, 600, 240)
-        fbs = st.radio("Fasting blood sugar > 120 mg/dl?", options=[1, 0],
-                       format_func=lambda x: "Yes" if x == 1 else "No", horizontal=True)
-        restecg = st.selectbox(
-            "Resting ECG result", options=[0, 1, 2],
-            format_func=lambda x: {0: "Normal", 1: "ST-T wave abnormality",
-                                    2: "Left ventricular hypertrophy"}[x],
-        )
+        with col1:
+            age = st.slider("Age", 18, 90, 54)
+            sex = st.radio("Sex", options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female", horizontal=True)
+            cp = st.selectbox(
+                "Chest pain type", options=[1, 2, 3, 4],
+                format_func=lambda x: {1: "Typical angina", 2: "Atypical angina",
+                                        3: "Non-anginal pain", 4: "Asymptomatic"}[x],
+            )
+            trestbps = st.slider("Resting blood pressure (mm Hg)", 80, 220, 130)
+            chol = st.slider("Serum cholesterol (mg/dl)", 100, 600, 240)
+            fbs = st.radio("Fasting blood sugar > 120 mg/dl?", options=[1, 0],
+                           format_func=lambda x: "Yes" if x == 1 else "No", horizontal=True)
+            restecg = st.selectbox(
+                "Resting ECG result", options=[0, 1, 2],
+                format_func=lambda x: {0: "Normal", 1: "ST-T wave abnormality",
+                                        2: "Left ventricular hypertrophy"}[x],
+            )
 
-    with col2:
-        thalach = st.slider("Maximum heart rate achieved", 60, 220, 150)
-        exang = st.radio("Exercise-induced angina?", options=[1, 0],
-                          format_func=lambda x: "Yes" if x == 1 else "No", horizontal=True)
-        oldpeak = st.slider("ST depression induced by exercise (oldpeak)", 0.0, 6.5, 1.0, step=0.1)
-        slope = st.selectbox(
-            "Slope of peak exercise ST segment", options=[1, 2, 3],
-            format_func=lambda x: {1: "Upsloping", 2: "Flat", 3: "Downsloping"}[x],
-        )
-        ca = st.selectbox("Number of major vessels coloured by fluoroscopy (0-3)", options=[0, 1, 2, 3])
-        thal = st.selectbox(
-            "Thalassemia test result", options=[3, 6, 7],
-            format_func=lambda x: {3: "Normal", 6: "Fixed defect", 7: "Reversible defect"}[x],
-        )
+        with col2:
+            thalach = st.slider("Maximum heart rate achieved", 60, 220, 150)
+            exang = st.radio("Exercise-induced angina?", options=[1, 0],
+                              format_func=lambda x: "Yes" if x == 1 else "No", horizontal=True)
+            oldpeak = st.slider("ST depression induced by exercise (oldpeak)", 0.0, 6.5, 1.0, step=0.1)
+            slope = st.selectbox(
+                "Slope of peak exercise ST segment", options=[1, 2, 3],
+                format_func=lambda x: {1: "Upsloping", 2: "Flat", 3: "Downsloping"}[x],
+            )
+            ca = st.selectbox("Number of major vessels coloured by fluoroscopy (0-3)", options=[0, 1, 2, 3])
+            thal = st.selectbox(
+                "Thalassemia test result", options=[3, 6, 7],
+                format_func=lambda x: {3: "Normal", 6: "Fixed defect", 7: "Reversible defect"}[x],
+            )
 
-    # ------------------------------------------------------------------------
-    # Glossary — brief explanation of what each field means, for a non-clinical
-    # audience (e.g. the lecturer/investor persona) viewing the demo
-    # ------------------------------------------------------------------------
-    with st.expander("ℹ️ What do these fields mean?"):
-        st.markdown(
-            """
-            | Field | What it means |
-            |---|---|
-            | **Age** | Patient's age in years. |
-            | **Sex** | Biological sex of the patient. |
-            | **Chest pain type** | The nature of chest pain reported — asymptomatic is often *more* concerning clinically, since disease can be present without typical pain. |
-            | **Resting blood pressure** | Blood pressure (mm Hg) measured at rest, on hospital admission. |
-            | **Serum cholesterol** | Cholesterol level in the blood (mg/dl); a standard cardiovascular risk marker. |
-            | **Fasting blood sugar** | Whether blood sugar after fasting exceeds 120 mg/dl — a diabetes-related risk indicator. |
-            | **Resting ECG result** | Electrocardiogram reading at rest; abnormalities can indicate heart strain or damage. |
-            | **Maximum heart rate achieved** | Highest heart rate reached during an exercise stress test — lower peaks can signal reduced cardiac capacity. |
-            | **Exercise-induced angina** | Whether exercise brings on chest pain — a direct sign of restricted blood flow under stress. |
-            | **ST depression (oldpeak)** | How much the heart's electrical ST segment dips during exercise vs. rest; larger dips suggest more ischemia (reduced blood flow). |
-            | **Slope of peak exercise ST segment** | The shape of the ST segment at peak exercise; a downsloping pattern is generally a stronger warning sign than upsloping. |
-            | **Major vessels coloured by fluoroscopy** | Number of major blood vessels (0–3) visibly narrowed on a fluoroscopy scan — more narrowed vessels usually means more severe disease. |
-            | **Thalassemia test result** | Result of a blood-flow imaging test; "fixed" or "reversible defect" results indicate abnormal blood flow patterns linked to heart disease. |
-            """
-        )
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        # --------------------------------------------------------------------
+        # Glossary — brief explanation of what each field means, for a
+        # non-clinical audience (e.g. the lecturer/investor persona) viewing
+        # the demo
+        # --------------------------------------------------------------------
+        with st.expander("ℹ️ What do these fields mean?"):
+            st.markdown(
+                """
+                | Field | What it means |
+                |---|---|
+                | **Age** | Patient's age in years. |
+                | **Sex** | Biological sex of the patient. |
+                | **Chest pain type** | The nature of chest pain reported — asymptomatic is often *more* concerning clinically, since disease can be present without typical pain. |
+                | **Resting blood pressure** | Blood pressure (mm Hg) measured at rest, on hospital admission. |
+                | **Serum cholesterol** | Cholesterol level in the blood (mg/dl); a standard cardiovascular risk marker. |
+                | **Fasting blood sugar** | Whether blood sugar after fasting exceeds 120 mg/dl — a diabetes-related risk indicator. |
+                | **Resting ECG result** | Electrocardiogram reading at rest; abnormalities can indicate heart strain or damage. |
+                | **Maximum heart rate achieved** | Highest heart rate reached during an exercise stress test — lower peaks can signal reduced cardiac capacity. |
+                | **Exercise-induced angina** | Whether exercise brings on chest pain — a direct sign of restricted blood flow under stress. |
+                | **ST depression (oldpeak)** | How much the heart's electrical ST segment dips during exercise vs. rest; larger dips suggest more ischemia (reduced blood flow). |
+                | **Slope of peak exercise ST segment** | The shape of the ST segment at peak exercise; a downsloping pattern is generally a stronger warning sign than upsloping. |
+                | **Major vessels coloured by fluoroscopy** | Number of major blood vessels (0–3) visibly narrowed on a fluoroscopy scan — more narrowed vessels usually means more severe disease. |
+                | **Thalassemia test result** | Result of a blood-flow imaging test; "fixed" or "reversible defect" results indicate abnormal blood flow patterns linked to heart disease. |
+                """
+            )
 
 # ----------------------------------------------------------------------------
 # Prediction — recomputed on every rerun (i.e. every time any widget changes),
@@ -316,49 +326,49 @@ proba = model.predict_proba(raw)[0][1]
 gauge_pct = max(0.0, min(1.0, proba)) * 100
 
 with result_col:
-    st.markdown('<div class="panel-card">', unsafe_allow_html=True)
-    st.markdown('<div class="panel-title">Risk assessment</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="panel-label">OUTPUT · updates live</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Risk assessment</div>', unsafe_allow_html=True)
 
-    if pred == 1:
+        if pred == 1:
+            st.markdown(
+                f"""
+                <div class='risk-high'>
+                    <h3>⚠️ High risk</h3>
+                    <div class="risk-figure">{proba:.0%}</div>
+                    <p class="risk-sub">Estimated probability of heart disease.
+                    Recommend prioritising this patient for further cardiac testing (e.g. angiography).</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f"""
+                <div class='risk-low'>
+                    <h3>✅ Low risk</h3>
+                    <div class="risk-figure">{proba:.0%}</div>
+                    <p class="risk-sub">Estimated probability of heart disease.
+                    Routine follow-up; further testing not immediately indicated based on this data.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
         st.markdown(
             f"""
-            <div class='risk-high'>
-                <h3>⚠️ High risk</h3>
-                <div class="risk-figure">{proba:.0%}</div>
-                <p class="risk-sub">Estimated probability of heart disease.
-                Recommend prioritising this patient for further cardiac testing (e.g. angiography).</p>
+            <div class="gauge-track">
+                <div class="gauge-fill" style="width:{gauge_pct:.1f}%"></div>
+                <div class="gauge-marker" style="left:calc({gauge_pct:.1f}% - 1px)"></div>
             </div>
+            <div class="gauge-labels"><span>0% RISK</span><span>50% THRESHOLD</span><span>100% RISK</span></div>
             """,
             unsafe_allow_html=True,
         )
-    else:
-        st.markdown(
-            f"""
-            <div class='risk-low'>
-                <h3>✅ Low risk</h3>
-                <div class="risk-figure">{proba:.0%}</div>
-                <p class="risk-sub">Estimated probability of heart disease.
-                Routine follow-up; further testing not immediately indicated based on this data.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
-    st.markdown(
-        f"""
-        <div class="gauge-track">
-            <div class="gauge-fill" style="width:{gauge_pct:.1f}%"></div>
-            <div class="gauge-marker" style="left:calc({gauge_pct:.1f}% - 1px)"></div>
-        </div>
-        <div class="gauge-labels"><span>0% RISK</span><span>50% THRESHOLD</span><span>100% RISK</span></div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="panel-label">ENTERED DATA</div>', unsafe_allow_html=True)
-    st.dataframe(raw.T.rename(columns={0: "Value"}), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="panel-label">ENTERED DATA</div>', unsafe_allow_html=True)
+        st.dataframe(raw.T.rename(columns={0: "Value"}), use_container_width=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 with st.expander("About this tool"):
