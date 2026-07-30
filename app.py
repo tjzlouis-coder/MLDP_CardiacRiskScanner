@@ -220,7 +220,7 @@ st.markdown("""
         <h1>🫀 SmartCare Cardiac Risk Screener</h1>
         <p>Clinical decision-support tool estimating a patient's heart disease risk
         from routine checkup data, to help prioritise who should be sent for
-        further cardiac testing (e.g. angiography).</p>
+        further cardiac testing.</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
